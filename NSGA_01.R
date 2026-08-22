@@ -8,7 +8,7 @@
 #---
 R.version.string
 getwd()
-setwd("/Users/baofuma/NSGA")
+setwd("/Users/meganma/NSGA")
 
 knitr::opts_chunk$set(echo = TRUE)
 

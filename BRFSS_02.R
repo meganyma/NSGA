@@ -4,7 +4,7 @@
 #  mutate(across(where(is.character), ~ na_if(.x, ""))) %>%
 #  mutate(across(where(is.character), ~ if_else(.x == "Unknown", NA_character_, .x))) %>%
 #  mutate(across(where(is.numeric), ~ ifelse(is.finite(.x), .x, NA_real_)))
-------------
+#------------
 
 
 library(haven)
@@ -46,6 +46,11 @@ brfss2 %>% filter(`_STATE` == 34, CAREGIV1 %in% 1:2) %>% nrow()
 s_common <- brfss0 %>% filter(CAREGIV1 %in% 1:2) %>% distinct(`_STATE`) %>% pull()
 s_v1     <- brfss1 %>% filter(CAREGIV1 %in% 1:2) %>% distinct(`_STATE`) %>% pull()
 s_v2     <- brfss2 %>% filter(CAREGIV1 %in% 1:2) %>% distinct(`_STATE`) %>% pull()
+length(s_common)
+length(s_v1)
+length(s_v2)
+
+length(unique(c(s_common, s_v1, s_v2)))
 
 intersect(s_common, s_v1)   # expect empty
 intersect(s_common, s_v2)   # New Jersey may appear here
@@ -80,6 +85,8 @@ v2 <- brfss2 %>%
 
 brfss <- bind_rows(common, v1, v2)
 brfss %>% count(CAREGIV1)
+
+
 # ============================================================
 # 2) Remove/handle Unknown/DK + basic range cleaning
 # ============================================================
@@ -186,13 +193,11 @@ table(brfss$income_cont, useNA = "ifany")
 brfss <- brfss %>%
   mutate(
     education_cat = case_when(
-      EDUCA %in% c(1, 2) ~ "Less than high school",
-      EDUCA %in% c(3, 4) ~ "High school graduate",
+      EDUCA %in% c(1,2,3, 4) ~ "High school and less",
       EDUCA == 5         ~ "Some college",
       EDUCA == 6         ~ "College graduate",
       TRUE               ~ NA_character_
-    ) %>% factor(levels = c("Less than high school",
-                            "High school graduate",
+    ) %>% factor(levels = c("High school and less",
                             "Some college",
                             "College graduate"))
   )

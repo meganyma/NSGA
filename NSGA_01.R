@@ -8,7 +8,7 @@
 #---
 R.version.string
 getwd()
-setwd("/Users/meganma/NSGA")
+setwd("/Users/baofuma/NSGA")
 
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -202,13 +202,11 @@ dat <- dat %>%
 dat <- dat %>%
   mutate(
     education_cat = case_when(
-      educationlevel_highestgrade == 1 ~ "Less than high school",
-      educationlevel_highestgrade == 2 ~ "High school graduate",
+      educationlevel_highestgrade %in% c(1,2) ~ "High school and less",
       educationlevel_highestgrade == 3        ~ "Some college",
       educationlevel_highestgrade %in% c(4, 5)         ~ "College graduate",
       TRUE               ~ NA_character_
-    ) %>% factor(levels = c("Less than high school",
-                            "High school graduate",
+    ) %>% factor(levels = c("High school and less",
                             "Some college",
                             "College graduate"))
   )
@@ -297,3 +295,15 @@ dat %>%
     n = n()
   )
 
+dat %>%
+  filter(!is.na(caregiving_clean), age >= 50) %>%
+  summarise(
+    mean_days = mean(exercise_days_07, na.rm = TRUE),
+    sd = sd(exercise_days, na.rm = TRUE),
+    n = n()
+  )
+
+tbl_vars <- c("caregiving_clean", "healthydays_mental", "healthydays_physical",
+              "age", "gender", "race_white_bin", "marital_binary",
+              "education_cat", "income_cont","employment_binary",
+              "gen_health_15", "chronic_count")
